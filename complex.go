@@ -478,6 +478,14 @@ func (s *ObjectShape) validate(v interface{}, ctxPath string) error {
 		return fmt.Errorf("validate properties: %w", err)
 	}
 
+	for pair := s.Properties.Oldest(); pair != nil; pair = pair.Next() {
+		if (props[pair.Key] == nil || props[pair.Key] == "") && pair.Value.Required {
+			return fmt.Errorf("property %s is required but not specified", ctxPath+"."+pair.Key)
+
+		}
+
+	}
+
 	mapLen := uint64(len(props))
 	if s.MinProperties != nil && mapLen < *s.MinProperties {
 		return fmt.Errorf("object must have at least %d properties", *s.MinProperties)
